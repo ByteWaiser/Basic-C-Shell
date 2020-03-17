@@ -139,3 +139,9 @@ Finally, keep versions of your code using Git. Also, don't forget to add a repor
 Submit your `cen354sh` C source code, your `Makefile` and a `.pdf` file as your report. Make sure you add your name and student id at the end of your report.
 
 When you accepted this assignment, you have created a repository as assignment2-your_GitHub_username. Cloning this repository gives you a local copy of your project. After adding your files you can commit the changes.
+
+## References
+[Operating Systems: Three Easy Pieces](http://www.ostep.org), Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, Arpaci-Dusseau Books
+August, 2018 (Version 1.00)
+
+[Operating Systems: Three Easy Pieces Projects](https://github.com/remzi-arpacidusseau/ostep-projects)
