@@ -1,4 +1,5 @@
 # CEN354 Operating Systems - Assignment #2:
+
 # Linux Shell
 ---
 **Assigned: March 17, 2020**
@@ -133,7 +134,7 @@ Beat up your own code! You are the best (and in this case, the only) tester of t
 
 Finally, keep versions of your code using Git. Also, don't forget to add a report about your project as a single `.pdf` file.
 
-### Submission
+## Submission
 
 Submit your `cen354sh` C source code, your `Makefile` and a `.pdf` file as your report. Make sure you add your name and student id at the end of your report.
 
