@@ -6,6 +6,25 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+
+char error_message[30] = "An error has occurred\n";
+
+char *paths[] = {"/bin/"};
+
+int paths_size(){
+    return sizeof(paths) / sizeof(*paths);
+}
+
+char *builtin_list[] = {"exit", "cd", "path"};
+
+int exit_cmd(){
+    return 0;
+}
+
+int (*builtin_func[]) (char **) = {
+    &exit_cmd,
+};
+
 char *ltrim(char *s){
     while(isspace(*s)) s++;
     return s;
@@ -33,23 +52,32 @@ char **sep(char *s){
     return temp;
 }
 
-int launch(char **args)
-{
+int run(char **args){
     pid_t pid, wpid;
     int status;
-    char x[100] = "/bin/";
-    char *path = strcat(x, args[0]);
+    char *full_path = malloc(sizeof(char)*100);
+
+    for(int i = 0; i < paths_size(); i++){
+        
+
+        strcat(strcpy(full_path, paths[i]), args[0]);
+        printf("%s\n", full_path);
+        if(access(full_path, X_OK) == 0) break;
+    }
+    
+    
     
     pid = fork();
     if (pid == 0) {
         // Child process
-        if (execv(path, args) == -1) {
-        perror("cen354sh");
+        
+        if (execv(full_path, args) == -1) {
+            perror("cen354sh");
         }
         exit(EXIT_FAILURE);
     } else if (pid < 0) {
         // Error forking
-        perror("cen354sh");
+        printf("asdas\n");
     } else {
         // Parent process
         do {
@@ -70,7 +98,8 @@ int main(){
         char** k;
         s = trim(s);
         k = sep(s);
-        launch(k);
+        run(k);
     }
+
     return 0;
 }
