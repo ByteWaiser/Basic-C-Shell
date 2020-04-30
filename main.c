@@ -16,6 +16,7 @@ void builtin_error(){
 char *paths[100] = {"/bin"};
 
 char *trim(char *s){
+    
     char* back = s + strlen(s);
     while(isspace(*s)) s++;
     while(isspace(*--back));
@@ -24,13 +25,30 @@ char *trim(char *s){
     // last char will be strlen(s)-1
 }
 
+char **trim_tokens(char **t){
+    int i = 0;
+    int j = 0;
+    while(*(t+i) != NULL){
+        if(strcmp(*(t+i), "") != 0){
+            *(t+j) = *(t+i);
+            j++;
+        }else{
+            *(t+i) = NULL;
+        }
+        i++;
+    }
+    return t;
+}
+
 char **sep(char *s){
     char **temp = malloc(sizeof(char*) * 100);
     int i = 0;
     while(s != NULL){
+        *(temp+i) = malloc(sizeof(char*) * strlen(s));
         *(temp+i) = strsep(&s, " ");
         i++;
     }
+    
     return temp;
 }
 
@@ -42,9 +60,10 @@ void run(char **args){
     
     int i = 0;
     while(*(paths+i) != NULL){
-        full_path = strcat(strcat(strcpy(full_path, *(paths+i)),"/"), args[0]);
+        strcat(strcat(strcpy(full_path, paths[i]),"/"), args[0]);
         if(access(full_path, F_OK) == 0){
             strcpy(final_path, full_path);
+            break;
         }
         i++;
     }
@@ -89,8 +108,9 @@ void process(char **args){
         }
         int i = 0;
         while(*(args+i+1) != NULL){
-            *(paths+i) = *(args + i + 1);
-            printf("%s\n", paths[i]);
+            paths[i] = malloc(sizeof(char*) * strlen(*(args + i + 1)));
+            strcpy(paths[i], *(args + i + 1));
+            printf("Path: %s\n", paths[i]);
             i++;
         }
     }
@@ -111,12 +131,9 @@ void shell_loop(){
         printf(">>> ");
         getline(&input, &size, stdin);
         input = trim(input);
-        tokens = sep(input);
+        tokens = trim_tokens(sep(input));
         process(tokens);
-        free(input);
-        free(tokens);
     }
-
 }
 
 int main(){
