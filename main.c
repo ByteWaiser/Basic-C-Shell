@@ -18,8 +18,12 @@ char *paths[100] = {"/bin"};
 char *trim(char *s){
     
     char* back = s + strlen(s);
-    while(isspace(*s)) s++;
-    while(isspace(*--back));
+    while(isspace(*s)) {
+        s++;
+    }
+    while(isspace(*--back)){
+       // printf("%d\n",*back);
+    }
     *(back+1) = '\0';
     return s;
     // last char will be strlen(s)-1
@@ -31,8 +35,10 @@ char **trim_tokens(char **t){
     while(*(t+i) != NULL){
         if(strcmp(*(t+i), "") != 0){
             *(t+j) = *(t+i);
+            *(t+j) = trim(*(t+j));
             j++;
-        }else{
+        }
+        else{
             *(t+i) = NULL;
         }
         i++;
@@ -42,14 +48,25 @@ char **trim_tokens(char **t){
 
 char **sep(char *s){
     char **temp = malloc(sizeof(char*) * 100);
+    char **full = malloc(sizeof(char*) * 100);
     int i = 0;
     while(s != NULL){
         *(temp+i) = malloc(sizeof(char*) * strlen(s));
         *(temp+i) = strsep(&s, " ");
         i++;
     }
+    i = 0;
+    int k = 0;
+    while(*(temp+i) != NULL){
+        while(*(temp+i) != NULL){
+            *(full+k) = malloc(sizeof(char*) * strlen(*(temp+i)));
+            *(full+k) = strsep((temp+i), "\t");
+            k++;
+        }
+        i++;
+    }
     
-    return temp;
+    return full;
 }
 
 void run(char **args){
@@ -57,7 +74,8 @@ void run(char **args){
     int status;
     char *full_path = malloc(sizeof(char)*100);
     char *final_path = malloc(sizeof(char)*100);
-    
+
+
     int i = 0;
     while(*(paths+i) != NULL){
         strcat(strcat(strcpy(full_path, paths[i]),"/"), args[0]);
@@ -68,6 +86,7 @@ void run(char **args){
         i++;
     }
 
+    //printf("%saL\n",args[0]);
     pid = fork();
     if (pid == 0) {
         // Child process
@@ -134,6 +153,8 @@ void shell_loop(){
         tokens = trim_tokens(sep(input));
         process(tokens);
     }
+    free(input);
+    free(tokens);
 }
 
 int main(){
