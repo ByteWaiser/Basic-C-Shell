@@ -52,8 +52,8 @@ char **trim_tokens(char **t){
 
 //To seperate the tokens
 char **sep(char *s){
-    char **temp = malloc(sizeof(char*) * 100);
-    char **full = malloc(sizeof(char*) * 100);
+    char **temp = malloc(sizeof(char*) * 300);
+    char **full = malloc(sizeof(char*) * 300);
     int i = 0;
     //Seperate tokens using space delimeter and add them to a temp array
     while(s != NULL){
@@ -87,8 +87,8 @@ void run(char **args){
 
     int out = 0;
     int j = 0;
-    char **new_args = malloc(sizeof(char*) * 100);
-    char *file_arg = malloc(sizeof(char) * 100);
+    char **new_args = malloc(sizeof(char*) * 300);
+    char *file_arg = malloc(sizeof(char) * 300);
     //Checkes every arg if one has > then make out = 1
     while(*(args+j) != NULL){
         //If an arg itself is equals to > copy next arg as a file_path if next arg is valid
