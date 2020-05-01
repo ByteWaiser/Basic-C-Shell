@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 
 char error_message[30] = "An error has occurred\n";
@@ -76,22 +77,77 @@ void run(char **args){
     char *final_path = malloc(sizeof(char)*100);
 
 
+    int out = 0;
+    int j = 0;
+    char **new_args = malloc(sizeof(char*) * 100);
+    char *file_arg = malloc(sizeof(char) * 100);
+
+    while(*(args+j) != NULL){
+        if(strcmp(*(args+j), ">") == 0){
+            out = 1;
+            if(*(args+j+1)){
+                strcpy(file_arg, *(args+j+1));
+            }
+            else{
+                builtin_error();
+                return;
+            }
+            break;
+        }
+
+        else if(strchr(*(args+j), '>') != NULL){
+            char *pos = strchr(*(args+j), '>');
+            if(pos == *(args+j)){
+                strcpy(file_arg, pos+1);
+            }
+            else if(pos == (*(args+j)+strlen(*(args+j))-1)){
+                new_args[j] = malloc(sizeof(char*) * strlen(*(args+j)));
+                strcpy(new_args[j], strsep((args+j), ">"));
+                if(*(args+j+1)){
+                    strcpy(file_arg, *(args+j+1));
+                }
+                else{
+                    builtin_error();
+                    return;
+                }
+            }
+            else{
+                new_args[j] = malloc(sizeof(char*) * strlen(*(args+j)));
+                strcpy(new_args[j], strsep((args+j), ">"));
+                strcpy(file_arg, *(args+j));
+            }
+            out = 1;
+            break;
+        }
+        new_args[j] = malloc(sizeof(char*) * strlen(*(args+j)));
+        new_args[j] = *(args+j);
+        j++;
+    }
+
     int i = 0;
     while(*(paths+i) != NULL){
-        strcat(strcat(strcpy(full_path, paths[i]),"/"), args[0]);
+        strcat(strcat(strcpy(full_path, paths[i]),"/"), new_args[0]);
         if(access(full_path, F_OK) == 0){
             strcpy(final_path, full_path);
             break;
         }
         i++;
     }
-
+     
+    
     //printf("%saL\n",args[0]);
     pid = fork();
     if (pid == 0) {
         // Child process
-        
-        if (execv(final_path, args) == -1) {
+        if(out == 1){
+            int fd = open(file_arg, O_WRONLY | O_CREAT, 0600);
+            dup2(fd, 1);   // make stdout go to file
+            dup2(fd, 2);   // make stderr go to file - you may choose to not do this
+            out = 0;
+            close(fd); 
+        }
+
+        if (execv(final_path, new_args) == -1) {
             builtin_error();
         }
         exit(EXIT_FAILURE);
@@ -147,7 +203,7 @@ void shell_loop(){
     char **tokens;
     size_t size = 0;
     while(1){
-        printf(">>> ");
+        printf("cen354sh>> ");
         getline(&input, &size, stdin);
         input = trim(input);
         tokens = trim_tokens(sep(input));
